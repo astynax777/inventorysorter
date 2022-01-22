@@ -20,7 +20,7 @@ package cpw.mods.inventorysorter;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.Slot;
-import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import org.apache.logging.log4j.*;
 
 import java.util.function.Supplier;

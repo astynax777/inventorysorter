@@ -21,11 +21,10 @@ package cpw.mods.inventorysorter;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -35,12 +34,13 @@ import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.fmlserverevents.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
@@ -88,15 +88,15 @@ public class InventorySorter
     }
 
     private void handleimcmessage(final InterModComms.IMCMessage msg) {
-        if ("slotblacklist".equals(msg.getMethod())) {
-            final String slotBlacklistTarget = msg.<String>getMessageSupplier().get();
+        if ("slotblacklist".equals(msg.method())) {
+            final String slotBlacklistTarget = (String)msg.messageSupplier().get();
             if (slotblacklist.add(slotBlacklistTarget)) {
                 debugLog("SlotBlacklist added {}", ()->new String[] {slotBlacklistTarget});
             }
         }
 
-        if ("containerblacklist".equals(msg.getMethod())) {
-            final ResourceLocation slotContainerTarget = msg.<ResourceLocation>getMessageSupplier().get();
+        if ("containerblacklist".equals(msg.method())) {
+            final ResourceLocation slotContainerTarget = (ResourceLocation)msg.messageSupplier().get();
             if (containerblacklist.add(slotContainerTarget)) {
                 debugLog("ContainerBlacklist added {}", () -> new String[] {slotContainerTarget.toString()});
             }
@@ -114,8 +114,8 @@ public class InventorySorter
         Network.init();
     }
 
-    private void onServerStarting(ServerStartingEvent evt) {
-        InventorySorterCommand.register(evt.getServer().getCommands().getDispatcher());
+    public void onServerStarting(FMLServerStartingEvent event) {
+        InventorySorterCommand.register(event.getServer().getCommands().getDispatcher());
     }
 
     void onConfigLoad(ModConfigEvent configEvent) {
@@ -137,12 +137,6 @@ public class InventorySorter
         if (debugLog) {
             LOGGER.error(message, (Object[]) args.get());
         }
-    }
-
-    private static TextComponent greenText(final String string) {
-        final TextComponent tcs = new TextComponent(string);
-        tcs.getStyle().withColor(ChatFormatting.GREEN);
-        return tcs;
     }
 
     static int blackListAdd(final CommandContext<CommandSourceStack> context) {

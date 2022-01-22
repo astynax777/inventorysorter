@@ -24,8 +24,9 @@ import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.KeyMapping;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.world.inventory.Slot;
-import net.minecraftforge.client.ClientRegistry;
-import net.minecraftforge.client.event.ScreenEvent;
+
+import net.minecraftforge.fmlclient.registry.ClientRegistry;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.*;
@@ -68,34 +69,35 @@ public class KeyHandler
         keyHandler = new KeyHandler();
     }
 
-    private void onKey(ScreenEvent.KeyboardKeyPressedEvent.Pre evt) {
+    private void onKey(GuiScreenEvent.KeyboardKeyPressedEvent.Pre evt) {
         onInputEvent(evt, this::keyEvaluate);
     }
 
-    private void onMouse(ScreenEvent.MouseClickedEvent.Pre evt) {
+    private void onMouse(GuiScreenEvent.MouseClickedEvent.Pre evt) {
         onInputEvent(evt, this::mouseClickEvaluate);
     }
 
-    private void onScroll(ScreenEvent.MouseScrollEvent.Post evt) {
+    private void onScroll(GuiScreenEvent.MouseScrollEvent.Post evt) {
         onInputEvent(evt, this::mouseScrollEvaluate);
     }
 
-    private boolean keyEvaluate(final KeyMapping kb, final ScreenEvent.KeyboardKeyPressedEvent.Pre evt) {
+    private boolean keyEvaluate(final KeyMapping kb, final GuiScreenEvent.KeyboardKeyPressedEvent.Pre evt) {
         return kb.matches(evt.getKeyCode(), evt.getScanCode());
     }
 
-    private boolean mouseClickEvaluate(final KeyMapping kb, final ScreenEvent.MouseClickedEvent.Pre evt) {
+    private boolean mouseClickEvaluate(final KeyMapping kb, final GuiScreenEvent.MouseClickedEvent.Pre evt) {
         return kb.matchesMouse(evt.getButton());
     }
 
-    private boolean mouseScrollEvaluate(final KeyMapping kb, final ScreenEvent.MouseScrollEvent.Post evt) {
+    private boolean mouseScrollEvaluate(final KeyMapping kb, final GuiScreenEvent.MouseScrollEvent.Post evt) {
         int dir = (int) Math.signum(evt.getScrollDelta());
         int keycode = dir + 100;
         return kb.matchesMouse(keycode);
     }
 
-    private <T extends ScreenEvent> void onInputEvent(T evt, BiPredicate<KeyMapping, T> kbTest) {
-        final Screen gui = evt.getScreen();
+    private <T extends GuiScreenEvent> void onInputEvent(T evt, BiPredicate<KeyMapping, T> kbTest) {
+        InventorySorter.LOGGER.info("onInputEvent: {}", evt);
+        final Screen gui = evt.getGui();
         if (!(gui instanceof AbstractContainerScreen && !(gui instanceof CreativeModeInventoryScreen))) {
             return;
         }
@@ -114,6 +116,7 @@ public class KeyHandler
         {
             if (guiContainer.getMenu() != null && guiContainer.getMenu().slots != null && guiContainer.getMenu().slots.contains(slot))
             {
+                InventorySorter.LOGGER.info("Sending action {} slot {}", triggeredAction, slot.index);
                 InventorySorter.LOGGER.debug("Sending action {} slot {}", triggeredAction, slot.index);
                 Network.channel.sendToServer(triggeredAction.message(slot));
                 evt.setCanceled(true);

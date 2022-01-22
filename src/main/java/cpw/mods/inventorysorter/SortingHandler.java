@@ -18,7 +18,6 @@
 
 package cpw.mods.inventorysorter;
 
-import com.google.common.base.*;
 import com.google.common.collect.*;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.InventoryMenu;
@@ -26,7 +25,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.*;
 
-import javax.annotation.*;
 import java.util.function.*;
 
 import net.minecraft.world.inventory.CraftingContainer;

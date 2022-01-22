@@ -25,7 +25,7 @@ apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remappe
 
 group= 'cpw.mods'
 archivesBaseName = 'inventorysorter'
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 //reckon {
 //    scopeFromProp()
@@ -99,7 +99,7 @@ curseforge {
         changelog = file('CHANGELOG.md')
         changelogType = 'markdown'
         releaseType = project.findProperty('releaseType') ?: 'alpha'
-        addGameVersion '1.18'
+        addGameVersion '1.17.1'
     }
     options {
         javaVersionAutoDetect = true // defaults to true
