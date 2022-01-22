@@ -1,3 +1,5 @@
+Fork of cpw's [Inventory Sorter](https://github.com/cpw/inventorysorter) for Minecraft v1.17.1
+
 # Inventory Sorter
 
 Simple inventory sorting for Minecraft
